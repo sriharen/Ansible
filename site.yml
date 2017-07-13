@@ -1,0 +1,28 @@
+#Adding secuirty group and allowing access to db ssh
+
+- name: Create a ec2 instance
+  hosts: localhost
+  gather_facts: False
+  tasks:
+    - include_vars: vars.yml
+    - name: Create security group
+      ec2_group:
+       name: webserver
+       description: "Webserver security group"
+       region: "{{ region }}"
+       rules:
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 80
+          to_port: 80
+          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 5432
+          to_port: 5432
+          cidr_ip: 0.0.0.0/0
+       rules_egress:
+        - proto: all
+          cidr_ip: 0.0.0.0/0
