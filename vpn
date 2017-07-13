@@ -1,0 +1,39 @@
+//Ensure openvpn is installed//
+sudo modprobe iptable_nat
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+sudo iptables -t nat -A POSTROUTING -s 10.4.0.1/2 -o eth0 -j MASQUERADE
+cd /etc/openvpn
+sudo openvpn --genkey --secret ovpn.key
+sudo vi openvpn.conf
+
+//Add the following// 
+
+port 1194
+proto tcp-server
+dev tun1
+ifconfig 10.4.0.1 10.4.0.2
+status server-tcp.log
+verb 3
+secret  ovpn.key
+
+//Save and close//
+sudo service openvpn start
+sudo chmod 777 ovpn.key
+
+scp -i <identityfile> user@amazonhost:/etc/openvpn/ovpn.key .
+
+//Install openvpn client locally//
+
+//After installation goto the config directory under openvpn.Open a new file by name myconfig.ovpn,add the following//
+
+proto tcp-client
+remote <your EC2 IP here>        
+port 1194                   
+dev tun                   
+secret "C:\\Program Files\\OpenVPN\\config\\ovpn.key"            
+redirect-gateway def1       
+ifconfig 10.4.0.2 10.4.0.1
+
+//Run openvpn client and connect//
+//Ensure you have opened ports for 1194 similar to the one like port 80, 5432, etc//
+//ssh to 10.4.0.2 and see if the ip is open//
