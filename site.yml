@@ -50,3 +50,21 @@
     - name: Wait for the instances to boot by checking the ssh port
       wait_for: host={{item.public_dns_name}} port=22 delay=60 timeout=320 state=started
       with_items: ec2.instances
+
+#Install postgres
+
+- name: Installing Postgres
+  hosts: database
+  user: ubuntu
+  become: yes 
+  become_method: sudo
+  tasks:
+    - name: ensure apt cache is up to date
+      apt: update_cache=yes
+    - name: Install Postgres
+      sudo: true
+      apt: name={{item}}
+      with_items:
+          - postgresql
+          - libpq-dev
+          - python-psycopg2
