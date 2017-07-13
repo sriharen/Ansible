@@ -68,3 +68,8 @@
           - postgresql
           - libpq-dev
           - python-psycopg2
+
+#Run cron job
+
+    - name: Run cron Job
+      cron: name="shell" hour="0" minute="5" weekday="7"  job="/narvar/script.sh/ > /dev/null"
